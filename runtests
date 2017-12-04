@@ -1,0 +1,20 @@
+#!/bin/bash
+for i in $(ls $1 | grep -e "\.py$")
+do
+  echo "--------------------------------------------"
+  echo "Testing " $i
+  python compile.py $1/$i
+  infile=${i/.py/.in}
+  assemblyfile=${i/.py/.s}
+  outfile=${i/.py/}
+  gcc -m32 -g -lm $1/$assemblyfile runtime/libpyyruntime.a -o $1/$outfile
+  cat $1/$infile | $1/$outfile > compiled.txt
+  cat $1/$infile | python $1/$i > actual.txt
+  diff compiled.txt actual.txt
+  echo "--------------------------------------------"
+
+  rm $1/$assemblyfile
+  rm $1/$outfile
+  rm compiled.txt
+  rm actual.txt
+done
