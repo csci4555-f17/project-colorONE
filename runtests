@@ -3,7 +3,7 @@ for i in $(ls $1 | grep -e "\.py$")
 do
   echo "--------------------------------------------"
   echo "Testing " $i
-  python compile.py $1/$i
+  python compile.py -color-ilp -collect-constraints $1/$i
   infile=${i/.py/.in}
   assemblyfile=${i/.py/.s}
   outfile=${i/.py/}

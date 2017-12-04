@@ -6,6 +6,7 @@ def color_ilp(iGraph, colorMapping, args):
     DOUBLE_EDGE_OPT = args[0]
     STATIC_COLOR_OPT = args[1]
     MEM_VAR = args[2]
+    PRINT_CONSTRAINTS = args[3]
     
     vertexMap = {vertex: [] for vertex in iGraph}
     memoryMap = {}
@@ -74,7 +75,8 @@ def color_ilp(iGraph, colorMapping, args):
                 prob += possV1[i] + possV2[i] <= 1
                 tccount += 1
 
-    print "variables: {}, constraints: {}".format(varcount, tccount)
+    if PRINT_CONSTRAINTS:
+        print "variables: {}, constraints: {}".format(varcount, tccount)
 
     # objective
     if MEM_VAR:

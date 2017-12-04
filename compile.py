@@ -5,6 +5,7 @@ from assembly import *
 import random
 
 from ilp_coloring import color_ilp
+from py_experiments import calculateAccesses
 
 from compiler.ast import *
 
@@ -2980,8 +2981,7 @@ def removeSadness(assemblyAst):
 
     return 
 
-def compilepy(sourceFile, targetFile, color_with_ilp, ilp_args):
-    print ilp_args
+def compilepy(sourceFile, targetFile, color_with_ilp, ilp_args, collect_accesses):
     ast = compiler.parseFile(sourceFile)
     dast = declassify(ast, 0, None, gather_assignments(ast.node), set([]), {})
     """
@@ -3057,6 +3057,7 @@ def compilepy(sourceFile, targetFile, color_with_ilp, ilp_args):
             outfile.write(os.linesep)
         
         outfile.write(".global main"+os.linesep)
+        accesses = 0
         for ast in functionAssembly:
             stackMap = {}
             lastStackLoc = 0
@@ -3072,6 +3073,8 @@ def compilepy(sourceFile, targetFile, color_with_ilp, ilp_args):
                     assignRegisters(ast, coloring)
                     #removeSadness(ast)
                     assemblyAst, lastPruned = prune_if(ast, lastPruned)
+                    if collect_accesses:
+                        accesses += calculateAccesses(assemblyAst)
                     if lastStackLoc < 0:
                         assemblyAst = assemblyAst[:6] + [Subl(AConst(abs(lastStackLoc)), Reg("esp"))] + assemblyAst[6:-5] + [Addl(AConst(abs(lastStackLoc)), Reg("esp"))] + assemblyAst[-5:]
                     for i in assemblyAst:
@@ -3085,6 +3088,9 @@ def compilepy(sourceFile, targetFile, color_with_ilp, ilp_args):
                     stackMap[failedVar] = lastStackLoc - 12
                     ast = adjustAst(ast, failedVar, stackMap)
 
+        if collect_accesses:
+            print "{},{}".format(sourceFile, accesses)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Python to x86 Compiler (P1)")
     parser.add_argument('input_file', type=str, help="The Python file to compile")
@@ -3092,7 +3098,9 @@ if __name__ == '__main__':
     parser.add_argument('-ilp-no-de-opt', action='store_false', default=True)
     parser.add_argument('-ilp-no-static-opt', action='store_false', default=True)
     parser.add_argument('-ilp-no-mem', action='store_false', default=True)
+    parser.add_argument('-collect-accesses', action='store_true', default=False)
+    parser.add_argument('-collect-constraints', action='store_true', default=False)
     args = parser.parse_args()   
     
     # TODO: handle the case where .py isn't the extension (let the parser handle syntax)
-    compilepy(args.input_file, args.input_file.replace('.py', '.s'), args.color_ilp, (args.ilp_no_de_opt, args.ilp_no_static_opt, args.ilp_no_mem))
+    compilepy(args.input_file, args.input_file.replace('.py', '.s'), args.color_ilp, (args.ilp_no_de_opt, args.ilp_no_static_opt, args.ilp_no_mem, args.collect_constraints), args.collect_accesses)
