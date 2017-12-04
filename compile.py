@@ -2980,7 +2980,8 @@ def removeSadness(assemblyAst):
 
     return 
 
-def compilepy(sourceFile, targetFile):
+def compilepy(sourceFile, targetFile, color_with_ilp, ilp_args):
+    print ilp_args
     ast = compiler.parseFile(sourceFile)
     dast = declassify(ast, 0, None, gather_assignments(ast.node), set([]), {})
     """
@@ -3063,8 +3064,10 @@ def compilepy(sourceFile, targetFile):
                 iGraph = {}
                 colorMapping = {}
                 liveSet = zombie(ast, set([]), iGraph, colorMapping)
-                #success, failedVar, coloring = color(iGraph, colorMapping)
-                success, failedVar, coloring = color_ilp(iGraph, colorMapping)
+                if color_with_ilp:
+                    success, failedVar, coloring = color_ilp(iGraph, colorMapping, ilp_args)
+                else:
+                    success, failedVar, coloring = color_fast(iGraph, colorMapping)
                 if (success):
                     assignRegisters(ast, coloring)
                     #removeSadness(ast)
@@ -3085,7 +3088,11 @@ def compilepy(sourceFile, targetFile):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Python to x86 Compiler (P1)")
     parser.add_argument('input_file', type=str, help="The Python file to compile")
+    parser.add_argument('-color-ilp', action='store_true', default=False)
+    parser.add_argument('-ilp-no-de-opt', action='store_false', default=True)
+    parser.add_argument('-ilp-no-static-opt', action='store_false', default=True)
+    parser.add_argument('-ilp-no-mem', action='store_false', default=True)
     args = parser.parse_args()   
     
     # TODO: handle the case where .py isn't the extension (let the parser handle syntax)
-    compilepy(args.input_file, args.input_file.replace('.py', '.s'))
+    compilepy(args.input_file, args.input_file.replace('.py', '.s'), args.color_ilp, (args.ilp_no_de_opt, args.ilp_no_static_opt, args.ilp_no_mem))
