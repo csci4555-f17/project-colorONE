@@ -4,7 +4,7 @@ import compiler
 from assembly import *
 import random
 
-from ilp_coloring import color_ilp
+from ilp_coloring import color_ilp, spillCost
 from py_experiments import calculateAccesses
 
 from compiler.ast import *
@@ -2981,7 +2981,7 @@ def removeSadness(assemblyAst):
 
     return 
 
-def compilepy(sourceFile, targetFile, color_with_ilp, ilp_args, collect_accesses):
+def compilepy(sourceFile, targetFile, color_with_ilp, ilp_args, collect_accesses, greedyHint=True):
     ast = compiler.parseFile(sourceFile)
     dast = declassify(ast, 0, None, gather_assignments(ast.node), set([]), {})
     """
@@ -3061,12 +3061,32 @@ def compilepy(sourceFile, targetFile, color_with_ilp, ilp_args, collect_accesses
         for ast in functionAssembly:
             stackMap = {}
             lastStackLoc = 0
+            passed = False
             while True:
                 iGraph = {}
                 colorMapping = {}
                 liveSet = zombie(ast, set([]), iGraph, colorMapping)
                 if color_with_ilp:
-                    success, failedVar, coloring = color_ilp(iGraph, colorMapping, ilp_args)
+                    spills = {}
+                    spillCost(ast, spills)
+                    spillorder = [(k, spills[k]) for k in spills]
+                    spillorder.sort(key=lambda x:x[1], reverse=True)
+
+                    if greedyHint and not passed:
+                        success, failedVar, colorMapping = color_fast(iGraph, colorMapping)
+                        for v in colorMapping:
+                            if colorMapping[v][1] == False:
+                                p = random.random()
+                                if p > 0.75:
+                                    colorMapping[v] = (None, colorMapping[v][1])
+                        passed = True
+
+                    if not colorMapping:
+                        success = True
+                        failedVar = ""
+                        coloring = {}
+                    else:
+                        success, failedVar, coloring = color_ilp(iGraph, colorMapping, spills, ilp_args)
                 else:
                     success, failedVar, coloring = color_fast(iGraph, colorMapping)
                 if (success):
@@ -3098,9 +3118,10 @@ if __name__ == '__main__':
     parser.add_argument('-ilp-no-de-opt', action='store_false', default=True)
     parser.add_argument('-ilp-no-static-opt', action='store_false', default=True)
     parser.add_argument('-ilp-no-mem', action='store_false', default=True)
+    parser.add_argument('-ilp-no-spill', action='store_false', default=True)
     parser.add_argument('-collect-accesses', action='store_true', default=False)
     parser.add_argument('-collect-constraints', action='store_true', default=False)
     args = parser.parse_args()   
     
     # TODO: handle the case where .py isn't the extension (let the parser handle syntax)
-    compilepy(args.input_file, args.input_file.replace('.py', '.s'), args.color_ilp, (args.ilp_no_de_opt, args.ilp_no_static_opt, args.ilp_no_mem, args.collect_constraints), args.collect_accesses)
+    compilepy(args.input_file, args.input_file.replace('.py', '.s'), args.color_ilp, (args.ilp_no_de_opt, args.ilp_no_static_opt, args.ilp_no_mem, args.collect_constraints, args.ilp_no_spill), args.collect_accesses)

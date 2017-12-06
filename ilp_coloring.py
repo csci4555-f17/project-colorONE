@@ -1,12 +1,12 @@
 from pulp import *
+from assembly import *
 
-
-
-def color_ilp(iGraph, colorMapping, args):
+def color_ilp(iGraph, colorMapping, spills, args):
     DOUBLE_EDGE_OPT = args[0]
     STATIC_COLOR_OPT = args[1]
     MEM_VAR = args[2]
     PRINT_CONSTRAINTS = args[3]
+    SPILL_COST = args[4]
     
     vertexMap = {vertex: [] for vertex in iGraph}
     memoryMap = {}
@@ -18,7 +18,7 @@ def color_ilp(iGraph, colorMapping, args):
         varcount += 1
 
     # create variables for each possible color for each vertex
-    for vertex in iGraph:
+    for vertex in colorMapping:
         for color in range(1, 7):
             vertexMap[vertex].append(LpVariable("{}_{}".format(vertex, color), 0, 1, cat='Integer'))
         if MEM_VAR and not colorMapping[vertex][1]:
@@ -80,14 +80,22 @@ def color_ilp(iGraph, colorMapping, args):
 
     # objective
     if MEM_VAR:
-        memVars = [memoryMap[vertex] for vertex in memoryMap]
+        if SPILL_COST:
+            memVars = []
+            for vertex in memoryMap:
+                if vertex in spills:
+                    memVars.append(spills[vertex]*memoryMap[vertex])
+                else:
+                    memVars.append(memoryMap[vertex])
+        else:
+            memVars = [memoryMap[vertex] for vertex in memoryMap]
         prob += sum(memVars)
     else:
         totalVarList = [v for k in vertexMap for v in vertexMap[k]]
         prob += totalVarList[0]
     
     #status = prob.solve(GLPK(msg=0))
-    status = prob.solve(GLPK(msg=0, options=["--binarize"]))
+    status = prob.solve(GLPK(msg=0, options=["--binarize", "--dual"]))
     if status == 1:
         for vertex in vertexMap:
             found = False
@@ -104,3 +112,114 @@ def color_ilp(iGraph, colorMapping, args):
         exit(0)
     
 
+
+def spillCost(ast, spills):
+    for instr in ast:
+        if isinstance(instr, CallInd):
+            if isinstance(instr.target, Var):
+                if instr.target.name not in spills:
+                    spills[instr.target.name] = 0
+                spills[instr.target.name] += 1
+        elif isinstance(instr, Xorl):
+            if isinstance(instr.source, Var):
+                if instr.source.name not in spills:
+                    spills[instr.source.name] = 0
+                spills[instr.source.name] += 1
+            if isinstance(instr.dest, Var):
+                if instr.dest.name not in spills:
+                    spills[instr.dest.name] = 0
+                spills[instr.dest.name] += 1
+        elif isinstance(instr, Andl):
+            if isinstance(instr.source, Var):
+                if instr.source.name not in spills:
+                    spills[instr.source.name] = 0
+                spills[instr.source.name] += 1
+            if isinstance(instr.dest, Var):
+                if instr.dest.name not in spills:
+                    spills[instr.dest.name] = 0
+                spills[instr.dest.name] += 1
+        elif isinstance(instr, Sarl):
+            if isinstance(instr.source, Var):
+                if instr.source.name not in spills:
+                    spills[instr.source.name] = 0
+                spills[instr.source.name] += 1
+            if isinstance(instr.dest, Var):
+                if instr.dest.name not in spills:
+                    spills[instr.dest.name] = 0
+                spills[instr.dest.name] += 1
+        elif isinstance(instr, Orl):
+            if isinstance(instr.source, Var):
+                if instr.source.name not in spills:
+                    spills[instr.source.name] = 0
+                spills[instr.source.name] += 1
+            if isinstance(instr.dest, Var):
+                if instr.dest.name not in spills:
+                    spills[instr.dest.name] = 0
+                spills[instr.dest.name] += 1
+        elif isinstance(instr, Shl):
+            if isinstance(instr.source, Var):
+                if instr.source.name not in spills:
+                    spills[instr.source.name] = 0
+                spills[instr.source.name] += 1
+            if isinstance(instr.dest, Var):
+                if instr.dest.name not in spills:
+                    spills[instr.dest.name] = 0
+                spills[instr.dest.name] += 1
+        elif isinstance(instr, Cmpl):
+            if isinstance(instr.source, Var):
+                if instr.source.name not in spills:
+                    spills[instr.source.name] = 0
+                spills[instr.source.name] += 1
+            if isinstance(instr.dest, Var):
+                if instr.dest.name not in spills:
+                    spills[instr.dest.name] = 0
+                spills[instr.dest.name] += 1
+        elif isinstance(instr, Pushl):
+            if isinstance(instr.arg, Var):
+                if instr.arg.name not in spills:
+                    spills[instr.arg.name] = 0
+                spills[instr.arg.name] += 1
+        elif isinstance(instr, Movl):
+            if isinstance(instr.source, Var):
+                if instr.source.name not in spills:
+                    spills[instr.source.name] = 0
+                spills[instr.source.name] += 1
+            if isinstance(instr.dest, Var):
+                if instr.dest.name not in spills:
+                    spills[instr.dest.name] = 0
+                spills[instr.dest.name] += 1
+        elif isinstance(instr, Movzbl):
+            if isinstance(instr.source, Var):
+                if instr.source.name not in spills:
+                    spills[instr.source.name] = 0
+                spills[instr.source.name] += 1
+            if isinstance(instr.dest, Var):
+                if instr.dest.name not in spills:
+                    spills[instr.dest.name] = 0
+                spills[instr.dest.name] += 1
+        elif isinstance(instr, Subl):
+            if isinstance(instr.source, Var):
+                if instr.source.name not in spills:
+                    spills[instr.source.name] = 0
+                spills[instr.source.name] += 1
+            if isinstance(instr.dest, Var):
+                if instr.dest.name not in spills:
+                    spills[instr.dest.name] = 0
+                spills[instr.dest.name] += 1
+        elif isinstance(instr, Addl):
+            if isinstance(instr.source, Var):
+                if instr.source.name not in spills:
+                    spills[instr.source.name] = 0
+                spills[instr.source.name] += 1
+            if isinstance(instr.dest, Var):
+                if instr.dest.name not in spills:
+                    spills[instr.dest.name] = 0
+                spills[instr.dest.name] += 1
+        elif isinstance(instr, Negl):
+            if isinstance(instr.arg, Var):
+                if instr.arg.name not in spills:
+                    spills[instr.arg.name] = 0
+                spills[instr.arg.name] += 1
+        elif isinstance(instr, IfA):
+            spillCost(instr.then, spills)
+            spillCost(instr.else_, spills)
