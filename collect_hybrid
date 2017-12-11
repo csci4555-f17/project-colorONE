@@ -1,0 +1,25 @@
+#!/bin/bash
+
+START=$(date +%s.%N)
+python compile.py -color-ilp tests/P2/sean2_function5.py
+END=$(date +%s.%N)
+DIFF=$(echo "$END - $START" | bc)
+echo sean2_function5.py,$DIFF,-1 > speed_collection.txt
+
+START=$(date +%s.%N)
+python compile.py -color-ilp -hybrid -balance 25 tests/P2/sean2_function5.py
+END=$(date +%s.%N)
+DIFF=$(echo "$END - $START" | bc)
+echo sean2_function5.py,$DIFF,25 >> speed_collection.txt
+
+START=$(date +%s.%N)
+python compile.py -color-ilp -hybrid -balance 50 tests/P2/sean2_function5.py
+END=$(date +%s.%N)
+DIFF=$(echo "$END - $START" | bc)
+echo sean2_function5.py,$DIFF,50 >> speed_collection.txt
+
+START=$(date +%s.%N)
+python compile.py -color-ilp -hybrid -balance 75 tests/P2/sean2_function5.py
+END=$(date +%s.%N)
+DIFF=$(echo "$END - $START" | bc)
+echo sean2_function5.py,$DIFF,75 >> speed_collection.txt
