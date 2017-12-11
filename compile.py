@@ -2981,24 +2981,12 @@ def removeSadness(assemblyAst):
 
     return 
 
-def compilepy(sourceFile, targetFile, color_with_ilp, ilp_args, collect_accesses, greedyHint=True):
+def compilepy(sourceFile, targetFile, color_with_ilp, ilp_args, collect_accesses, greedyHint, hybridBalance):
     ast = compiler.parseFile(sourceFile)
     dast = declassify(ast, 0, None, gather_assignments(ast.node), set([]), {})
-    """
-    for i in dast.node.nodes:
-        print i
-        print ""
-    exit(0)
-    """
     u_env = {}
     uast, index = uniquify(dast, u_env, 0)
     explic = explicate(uast)
-    """
-    for i in explic.node.nodes:
-        print i
-        print ""
-    exit(0)
-    """
     #profiler(explic, "", {})
     freeVars = []
     compute_free_vars(explic.node, freeVars)
@@ -3006,12 +2994,6 @@ def compilepy(sourceFile, targetFile, color_with_ilp, ilp_args, collect_accesses
     tast = Module("", Stmt([Lambda([], [], 0, explic.node)]))
     hast = heapify(tast, freeVars)
     hast = Module("", hast.node.nodes[0].code)
-    """
-    for i in hast.node.nodes:
-        print i
-        print ""
-    exit(0)
-    """
     cast, flist, index = closure(hast, 0)
 
     strings = {}
@@ -3077,7 +3059,7 @@ def compilepy(sourceFile, targetFile, color_with_ilp, ilp_args, collect_accesses
                         for v in colorMapping:
                             if colorMapping[v][1] == False:
                                 p = random.random()
-                                if p > 0.75:
+                                if p > hybridBalance:
                                     colorMapping[v] = (None, colorMapping[v][1])
                         passed = True
 
@@ -3121,7 +3103,9 @@ if __name__ == '__main__':
     parser.add_argument('-ilp-no-spill', action='store_false', default=True)
     parser.add_argument('-collect-accesses', action='store_true', default=False)
     parser.add_argument('-collect-constraints', action='store_true', default=False)
+    parser.add_argument('-hybrid', action='store_true', default=False)
+    parser.add_argument('-balance', type=int, default=50)
     args = parser.parse_args()   
     
     # TODO: handle the case where .py isn't the extension (let the parser handle syntax)
-    compilepy(args.input_file, args.input_file.replace('.py', '.s'), args.color_ilp, (args.ilp_no_de_opt, args.ilp_no_static_opt, args.ilp_no_mem, args.collect_constraints, args.ilp_no_spill), args.collect_accesses)
+    compilepy(args.input_file, args.input_file.replace('.py', '.s'), args.color_ilp, (args.ilp_no_de_opt, args.ilp_no_static_opt, args.ilp_no_mem, args.collect_constraints, args.ilp_no_spill), args.collect_accesses, args.hybrid, args.balance/100.)

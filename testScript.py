@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from compile import compilepy
 import numpy as np
 
-input_files = ["tests/sean2_simple_add.py", "tests/P1/sean2_list8.py", "tests/P1/sean2_list9.py" , "tests/P2/simple_function_test.py"]#, "tests/P2/sean2_function_test2.py", "tests/P2/sean2_function5.py"]
+input_files = ["tests/sean2_simple_add.py", "tests/P1/sean2_list8.py", "tests/P1/sean2_list9.py"]# , "tests/P2/simple_function_test.py"]#, "tests/P2/sean2_function_test2.py", "tests/P2/sean2_function5.py"]
 greedy = []
 ilpAll = []
 ilpDe = []

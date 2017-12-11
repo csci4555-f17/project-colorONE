@@ -1,0 +1,31 @@
+#!/bin/bash
+
+python compile.py -color-ilp -collect-accesses tests/P1/sean2_list3.py > accesses_sean2_list3.txt
+python compile.py -collect-accesses tests/P1/sean2_list3.py >> accesses_sean2_list3.txt
+python compile.py -collect-accesses tests/P1/sean2_list3.py >> accesses_sean2_list3.txt
+python compile.py -collect-accesses tests/P1/sean2_list3.py >> accesses_sean2_list3.txt
+python compile.py -collect-accesses tests/P1/sean2_list3.py >> accesses_sean2_list3.txt
+python compile.py -collect-accesses tests/P1/sean2_list3.py >> accesses_sean2_list3.txt
+python compile.py -color-ilp -hybrid -balance 25 -collect-accesses tests/P1/sean2_list3.py >> accesses_sean2_list3.txt
+python compile.py -color-ilp -hybrid -balance 50 -collect-accesses tests/P1/sean2_list3.py >> accesses_sean2_list3.txt
+python compile.py -color-ilp -hybrid -balance 75 -collect-accesses tests/P1/sean2_list3.py >> accesses_sean2_list3.txt
+
+python compile.py -color-ilp -collect-accesses tests/P2/sean2_function5.py > accesses_sean2_function5.txt
+python compile.py -collect-accesses tests/P2/sean2_function5.py >> accesses_sean2_function5.txt
+python compile.py -collect-accesses tests/P2/sean2_function5.py >> accesses_sean2_function5.txt
+python compile.py -collect-accesses tests/P2/sean2_function5.py >> accesses_sean2_function5.txt
+python compile.py -collect-accesses tests/P2/sean2_function5.py >> accesses_sean2_function5.txt
+python compile.py -collect-accesses tests/P2/sean2_function5.py >> accesses_sean2_function5.txt
+python compile.py -color-ilp -hybrid -balance 25 -collect-accesses tests/P2/sean2_function5.py >> accesses_sean2_function5.txt
+python compile.py -color-ilp -hybrid -balance 50 -collect-accesses tests/P2/sean2_function5.py >> accesses_sean2_function5.txt
+python compile.py -color-ilp -hybrid -balance 75 -collect-accesses tests/P2/sean2_function5.py >> accesses_sean2_function5.txt
+
+python compile.py -color-ilp -collect-accesses tests/P2/sean2_function3.py > accesses_sean2_function3.txt
+python compile.py -collect-accesses tests/P2/sean2_function3.py >> accesses_sean2_function3.txt
+python compile.py -collect-accesses tests/P2/sean2_function3.py >> accesses_sean2_function3.txt
+python compile.py -collect-accesses tests/P2/sean2_function3.py >> accesses_sean2_function3.txt
+python compile.py -collect-accesses tests/P2/sean2_function3.py >> accesses_sean2_function3.txt
+python compile.py -collect-accesses tests/P2/sean2_function3.py >> accesses_sean2_function3.txt
+python compile.py -color-ilp -hybrid -balance 25 -collect-accesses tests/P2/sean2_function3.py >> accesses_sean2_function3.txt
+python compile.py -color-ilp -hybrid -balance 50 -collect-accesses tests/P2/sean2_function3.py >> accesses_sean2_function3.txt
+python compile.py -color-ilp -hybrid -balance 75 -collect-accesses tests/P2/sean2_function3.py >> accesses_sean2_function3.txt
