@@ -16,7 +16,7 @@ ilpDeSta = []
 for input_file in input_files:
 	print '\n\n\n\n', input_file
 	start = time.time()
-	compilepy(input_file, input_file.replace('.py', '.s'), False, (True, True, True, False, False), False, False, 0.5)
+	compilepy(input_file, input_file.replace('.py', '.s'), False, (True, True, True, False, True), False, False, 0.5)
 	end = time.time()
 	greedy.append(end-start)
 	print "Greedy compile time:", end-start, "seconds"
@@ -24,26 +24,26 @@ for input_file in input_files:
 	#ILP here
 
 	start = time.time()
-	compilepy(input_file, input_file.replace('.py', '.s'), True, (True, True, True, False, False), False, False, 0.5)
+	compilepy(input_file, input_file.replace('.py', '.s'), True, (True, True, True, False, True), False, False, 0.5)
 	end = time.time()
 	ilpAll.append(end-start)
 	print "ILP compile time with all optimization:", end-start, "seconds"
 
 	start = time.time()
-	compilepy(input_file, input_file.replace('.py', '.s'), True, (False, True, True, False, False), False, False, 0.5)
+	compilepy(input_file, input_file.replace('.py', '.s'), True, (False, True, True, False, True), False, False, 0.5)
 	end = time.time()
-	ilpDe.append(end-start)
+	ilpDe.append(end-start) 
 	print "ILP compile time with no de optimiztoin:", end-start, "seconds"
 
 	start = time.time()
-	compilepy(input_file, input_file.replace('.py', '.s'), True, (True, False, True, False, False), False, False, 0.5)
+	compilepy(input_file, input_file.replace('.py', '.s'), True, (True, False, True, False, True), False, False, 0.5)
 	end = time.time()
 	ilpStatic.append(end-start)
 	print "ILP compile time with no static optimization:", end-start, "seconds"
 
 
 	start = time.time()
-	compilepy(input_file, input_file.replace('.py', '.s'), True, (False, False, True, False, False), False, False, 0.5)
+	compilepy(input_file, input_file.replace('.py', '.s'), True, (False, False, True, False, True), False, False, 0.5)
 	end = time.time()
 	ilpDeSta.append(end-start)
 	print "ILP compile time with no de, static optimization:", end-start, "seconds"
@@ -59,7 +59,7 @@ for i in range(len(greedy)):
 	ax.set_ylabel('Times (seconds)')
 	ax.set_title(input_files[i] + " performance")
 	ax.set_xticks(ind + width / 2)
-	ax.set_xticklabels(('Greedy', 'ILP All', 'ILP no De', 'ILP no Static', 'ILP None'))
+	ax.set_xticklabels(('Greedy', 'ILP All (spill cost)', 'ILP no De (spill cost)', 'ILP no Static (spill cost)', 'ILP None (spill cost)'))
 	plt.ylim((0, ilpDe[i]*1.25))
 	def autolabel(rects):
 	    """
@@ -72,6 +72,6 @@ for i in range(len(greedy)):
 	                ha='center', va='bottom')
 	autolabel(rects1)
 	#plt.show()
-	plt.savefig(str(i) + "perfGraph.png", bbox_inches='tight')
+	plt.savefig(str(i) + "perfGraphSpill.png", bbox_inches='tight')
 
 

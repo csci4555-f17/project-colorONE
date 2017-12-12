@@ -1,0 +1,5 @@
+sean2_function5.py,.100677904,-2
+sean2_function5.py,19.754899294,-1
+sean2_function5.py,14.835799854,25
+sean2_function5.py,14.289912016,50
+sean2_function5.py,14.489004529,75

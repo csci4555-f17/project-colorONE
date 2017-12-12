@@ -1,0 +1,31 @@
+#!/bin/bash
+
+START=$(date +%s.%N)
+python compile.py tests/P2/project_while.py
+END=$(date +%s.%N)
+DIFF=$(echo "$END - $START" | bc)
+echo project_while.py,$DIFF,-2 > speed_collection2.txt
+
+START=$(date +%s.%N)
+python compile.py -color-ilp tests/P2/project_while.py
+END=$(date +%s.%N)
+DIFF=$(echo "$END - $START" | bc)
+echo project_while.py,$DIFF,-1 >> speed_collection2.txt
+
+START=$(date +%s.%N)
+python compile.py -color-ilp -hybrid -balance 25 tests/P2/project_while.py
+END=$(date +%s.%N)
+DIFF=$(echo "$END - $START" | bc)
+echo project_while.py,$DIFF,25 >> speed_collection2.txt
+
+START=$(date +%s.%N)
+python compile.py -color-ilp -hybrid -balance 50 tests/P2/project_while.py
+END=$(date +%s.%N)
+DIFF=$(echo "$END - $START" | bc)
+echo project_while.py,$DIFF,50 >> speed_collection2.txt
+
+START=$(date +%s.%N)
+python compile.py -color-ilp -hybrid -balance 75 tests/P2/project_while.py
+END=$(date +%s.%N)
+DIFF=$(echo "$END - $START" | bc)
+echo project_while.py,$DIFF,75 >> speed_collection2.txt
