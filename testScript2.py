@@ -48,7 +48,7 @@ for input_file in input_files:
 	ilpDeSta.append(end-start)
 	print "ILP compile time with no de, static optimization:", end-start, "seconds"
 
-
+inputNames = ["Addition.py", "List.py", "Other_List.py"]
 for i in range(len(greedy)):
 	data = [greedy[i], ilpAll[i], ilpDe[i], ilpStatic[i], ilpDeSta[i]]
 	N = 5
@@ -57,7 +57,7 @@ for i in range(len(greedy)):
 	fig, ax = plt.subplots()
 	rects1 = ax.bar(ind, data, width, color='r')
 	ax.set_ylabel('Times (seconds)')
-	ax.set_title(input_files[i] + " performance")
+	ax.set_title(inputNames[i] + " performance")
 	ax.set_xticks(ind + width / 2)
 	ax.set_xticklabels(('Greedy', 'ILP All (spill cost)', 'ILP no De (spill cost)', 'ILP no Static (spill cost)', 'ILP None (spill cost)'))
 	plt.ylim((0, ilpDe[i]*1.25))
