@@ -1,9 +1,0 @@
-tests/P2/sean2_function5.py,22
-tests/P2/sean2_function5.py,23
-tests/P2/sean2_function5.py,23
-tests/P2/sean2_function5.py,24
-tests/P2/sean2_function5.py,22
-tests/P2/sean2_function5.py,25
-tests/P2/sean2_function5.py,22
-tests/P2/sean2_function5.py,22
-tests/P2/sean2_function5.py,22

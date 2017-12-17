@@ -1,9 +1,0 @@
-tests/P2/project_while.py,5
-tests/P2/project_while.py,14
-tests/P2/project_while.py,8
-tests/P2/project_while.py,8
-tests/P2/project_while.py,5
-tests/P2/project_while.py,14
-tests/P2/project_while.py,5
-tests/P2/project_while.py,5
-tests/P2/project_while.py,8
