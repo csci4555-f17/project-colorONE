@@ -43,10 +43,11 @@ for f in accessNames:
     data = [raw_ilp, best, worst, avg, hybrid_25, hybrid_50, hybrid_75]
     rects1 = ax.bar(ind, data, width, color='r')
     ax.set_ylabel("Memory Accesses")
-    ax.set_title(f)
+    ax.set_title(f[:-4])
     ax.set_xticks(ind + width/2)
     ax.set_xticklabels(('Base ILP', 'Best Greedy', 'Worst Greedy', 'Avg Greedy', 'Hybrid 25', 'Hybrid 50', 'Hybrid 75'))
     plt.ylim((0, hybrid_75*1.25))
+    #plt.ylim((0, worst*1.25))
     def autolabel(rects):
         for rect in rects:
             height = rect.get_height()
@@ -77,7 +78,7 @@ for f in hybridNames:
     data = [greedy, raw_ilp, hybrid_25, hybrid_50, hybrid_75]
     rects1 = ax.bar(ind, data, width, color='r')
     ax.set_ylabel("Runtime (Hybrid)")
-    ax.set_title(f)
+    ax.set_title(f[:-4])
     ax.set_xticks(ind + width/2)
     ax.set_xticklabels(('Greedy', 'Base ILP', 'Hybrid 25', 'Hybrid 50', 'Hybrid 75'))
     plt.ylim((0, raw_ilp*1.25))
